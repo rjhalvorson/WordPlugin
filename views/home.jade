@@ -1,0 +1,14 @@
+extends layout
+
+block content
+    h1= title
+    p Welcome #{user.displayName}
+    p Choose a Task
+    p
+        a(href='/quotes/viewQuotes') View Quotes
+    p
+        a(href='/view:clauses') View Clauses
+    p
+        a(href='/view:import') Import Files
+    p
+        a(href='/connect/logout') Logout
