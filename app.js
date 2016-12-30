@@ -5,28 +5,21 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var passport = require('passport');
 
-// Remove Startup Components
-// var index = require('./routes/index');
-// var users = require('./routes/users');
+// Strategy
+var ForceDotComStrategy = require('passport-forcedotcom').Strategy();
 
-// Initalize JSforce
-var jsforce = require('jsforce');
-var conn = new jsforce.Connection();
+
+var index = require('./routes/index');
+var users = require('./routes/users');
 
 // Initialize Express
 var app = express();
 
-// Initalize Passport + Strategies
-var passport = require('passport');
-var salesforceConfig = require('./ws-conf').salesforceConfig;
-var ForceDotComStrategy = require('passport-forcedotcom').Strategy;
-
 // Initalize Session
 var session = require('express-session');
-
 var routes = require('./routes/index');
-var disconnect = require('./routes/disconnect');
 
 
 // view engine setup
