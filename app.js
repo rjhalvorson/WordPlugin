@@ -13,6 +13,7 @@ var jsforce = require('jsforce');
 
 // Strategy
 var ForceDotComStrategy = require('passport-forcedotcom').Strategy;
+var conn = new jsforce.Connection();
 
 // Set Force.com app's clientID
 var CF_CLIENT_ID = '3MVG9szVa2RxsqBa..NzsCLuTNnUVDZMg4h.a617U_9CgLRcSUzURWxbqhokMToCceYg4IqNdfDFKm6EiVPbR';
@@ -40,20 +41,39 @@ var sfStrategy = new ForceDotComStrategy({
     // asynchronous verification, for effect...
     process.nextTick(function() {
 
+        conn = new jsforce.Connection({
+            oauth2 : {
+                clientId : '3MVG9szVa2RxsqBa..NzsCLuTNnUVDZMg4h.a617U_9CgLRcSUzURWxbqhokMToCceYg4IqNdfDFKm6EiVPbR',
+                clientSecret : '5528941850908566996',
+                redirectUri : 'http://localhost:3000/connect/auth/forcedotcom/callback'
+            },
+            instanceUrl: accessToken.params.instance_url,
+            accessToken: accessToken.params.access_token,
+            refreshToken: refreshToken
+        });
+        console.log(accessToken);
+        console.log(conn);
+        console.log(refreshToken);
+
+        var records = [];
+        conn.query("SELECT Id, Name FROM Account", function(err, result) {
+            if (err) { return console.error(err); }
+            console.log("total : " + result.totalSize);
+            console.log("fetched : " + result.records.length);
+        });
+
         // To keep the example simple, the user's forcedotcom profile is returned to
         // represent the logged-in user.  In a typical application, you would want
         // to associate the forcedotcom account with a user record in your database,
         // and return that user instead.
         //
         // We'll remove the raw profile data here to save space in the session store:
-        console.log(profile);
         delete profile._raw;
         return done(null, profile);
     });
 });
 
 passport.use(sfStrategy);
-
 
 
 var index = require('./routes/index');

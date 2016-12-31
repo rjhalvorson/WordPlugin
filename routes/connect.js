@@ -5,14 +5,15 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
-var jsforce = require('jsforce');
+var dbHelper = new(require('../database/db'))();
 
 // GET /auth/forcedotcom
 //   Use passport.authenticate() as route middleware to authenticate the
 //   request.  The first step in Force.com authentication will involve
 //   redirecting the user to your domain.  After authorization, Force.com will
 //   redirect the user back to this application at /auth/forcedotcom/callback
-router.get('/auth/forcedotcom', passport.authenticate('forcedotcom'), function(req, res) {
+router.get('/auth/forcedotcom', passport.authenticate('forcedotcom'),
+    function(req, res) {
     // The request will be redirected to Force.com for authentication, so this
     // function will not be called.
 });
