@@ -5,7 +5,6 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
-var dbHelper = new(require('../database/db'))();
 
 // GET /auth/forcedotcom
 //   Use passport.authenticate() as route middleware to authenticate the
@@ -24,7 +23,8 @@ router.get('/auth/forcedotcom', passport.authenticate('forcedotcom'),
 //   request.  If authentication fails, the user will be redirected back to the
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
-router.get('/auth/forcedotcom/callback', passport.authenticate('forcedotcom', {
+router.get('/auth/forcedotcom/callback',
+    passport.authenticate('forcedotcom', {
     failureRedirect: '/login'
 }), function(req, res) {
     res.redirect('/');

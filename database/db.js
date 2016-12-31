@@ -62,11 +62,11 @@ dbHelper.prototype.getUserData = function getUserData(sfid, callback) {
 };
 
 dbHelper.prototype.saveAccessToken =
-    function saveAccessToken(sfid, sessionID, providerName, displayName, accessToken, refreshToken, instanceUrl, callback) {
+    function saveAccessToken(sfid, sessionID, displayName, accessToken, refreshToken, instanceUrl, callback) {
         var db = new sqlite3.Database(dbFile);
         var insertStatement = 'INSERT INTO UserData ' +
-            '(Sfid, SessionID, ProviderName, DisplayName, AccessToken) ' +
-            'VALUES ($sfid, $sessionID, $providerName, $displayName, $accessToken, $refreshToken, $instanceUrl)';
+            '(Sfid, SessionID, DisplayName, AccessToken, RefreshToken, InstanceUrl) ' +
+            'VALUES ($sfid, $sessionID, $displayName, $accessToken, $refreshToken, $instanceUrl)';
 
         db.serialize(function executeInsert() {
             db.run(
@@ -74,7 +74,6 @@ dbHelper.prototype.saveAccessToken =
                 {
                     $sfid: sfid,
                     $sessionID: sessionID,
-                    $providerName: providerName,
                     $displayName: displayName,
                     $accessToken: accessToken,
                     $refreshToken: refreshToken,

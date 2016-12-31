@@ -9,6 +9,7 @@ var passport = require('passport');
 var morgan = require('morgan');
 var session = require('express-session');
 var jsforce = require('jsforce');
+var dbHelper = new(require('./database/db'))();
 
 
 // Strategy
@@ -41,27 +42,32 @@ var sfStrategy = new ForceDotComStrategy({
     // asynchronous verification, for effect...
     process.nextTick(function() {
 
-        conn = new jsforce.Connection({
-            oauth2 : {
-                clientId : '3MVG9szVa2RxsqBa..NzsCLuTNnUVDZMg4h.a617U_9CgLRcSUzURWxbqhokMToCceYg4IqNdfDFKm6EiVPbR',
-                clientSecret : '5528941850908566996',
-                redirectUri : 'http://localhost:3000/connect/auth/forcedotcom/callback'
-            },
-            instanceUrl: accessToken.params.instance_url,
-            accessToken: accessToken.params.access_token,
-            refreshToken: refreshToken
-        });
-        console.log(accessToken);
-        console.log(conn);
-        console.log(refreshToken);
+        // remove previous tokens on new login and then save new token
+        dbHelper.deleteAccessToken(
+            profile.id,
+            function callback(error){
+                if(error){
+                    throw error;
+                } else {
+                    dbHelper.saveAccessToken(
 
-        var records = [];
-        conn.query("SELECT Id, Name FROM Account", function(err, result) {
-            if (err) { return console.error(err); }
-            console.log("total : " + result.totalSize);
-            console.log("fetched : " + result.records.length);
-        });
-
+                        profile.id,
+                        'to be fixed',
+                        profile.displayName,
+                        accessToken.params.access_token,
+                        refreshToken,
+                        accessToken.params.instance_url,
+                        function callback(error) {
+                            if (error) {
+                                throw error;
+                            } else {
+                                return;
+                            }
+                        }
+                    );
+                }
+            }
+        );
         // To keep the example simple, the user's forcedotcom profile is returned to
         // represent the logged-in user.  In a typical application, you would want
         // to associate the forcedotcom account with a user record in your database,
