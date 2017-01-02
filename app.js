@@ -2,7 +2,6 @@
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
@@ -10,18 +9,11 @@ var morgan = require('morgan');
 var session = require('express-session');
 var jsforce = require('jsforce');
 var dbHelper = new(require('./database/db'))();
+var cAppConfig = require('./ws-conf').connectedAppConfig;
 
 
 // Strategy
 var ForceDotComStrategy = require('passport-forcedotcom').Strategy;
-var conn = new jsforce.Connection();
-
-// Set Force.com app's clientID
-var CF_CLIENT_ID = '3MVG9szVa2RxsqBa..NzsCLuTNnUVDZMg4h.a617U_9CgLRcSUzURWxbqhokMToCceYg4IqNdfDFKm6EiVPbR';
-var CF_CLIENT_SECRET = '5528941850908566996';
-var CF_CALLBACK_URL = 'http://localhost:3000/connect/auth/forcedotcom/callback';
-var SF_AUTHORIZE_URL = 'https://login.salesforce.com/services/oauth2/authorize';
-var SF_TOKEN_URL = 'https://login.salesforce.com/services/oauth2/token';
 
 passport.serializeUser(function(user, done) {
     done(null, user);
@@ -31,13 +23,7 @@ passport.deserializeUser(function(obj, done) {
     done(null, obj);
 });
 
-var sfStrategy = new ForceDotComStrategy({
-    clientID: CF_CLIENT_ID,
-    clientSecret: CF_CLIENT_SECRET,
-    callbackURL: CF_CALLBACK_URL,
-    authorizationURL: SF_AUTHORIZE_URL,
-    tokenURL: SF_TOKEN_URL
-}, function(accessToken, refreshToken, profile, done) {
+var sfStrategy = new ForceDotComStrategy(cAppConfig, function(accessToken, refreshToken, profile, done) {
 
     // asynchronous verification, for effect...
     process.nextTick(function() {

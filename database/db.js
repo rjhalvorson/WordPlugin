@@ -44,18 +44,21 @@ dbHelper.prototype.getUserData = function getUserData(sfid, callback) {
         'SELECT AccessToken, RefreshToken, InstanceUrl ' +
         'FROM UserData WHERE Sfid = $sfid';
 
-    userData.sfid = Sfid;
+    userData.sfid = sfid;
 
     db.serialize(function executeSelect() {
         db.all(
             getUserDataStatement,
             {
-                $sfid: Sfid
+                $sfid: sfid
             },
-            function(err, rows) {
-                rows.forEach(function (row) {
-                    console.log(row.id + ": " + row.info);
-                });
+            function queryExecute(error, userDetails){
+                if(error !== null){
+                    throw error;
+                } else{
+                    userData.dts = userDetails;
+                    callback(error, userData);
+                }
             }
         );
     });

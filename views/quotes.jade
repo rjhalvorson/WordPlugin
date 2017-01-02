@@ -3,3 +3,18 @@ extends layout
 block content
     h1 Quote List
     p Quote List
+        table
+            tr
+                th Quote Name
+                th Account
+                th Opportunity
+                th Quote Owner
+                th Net Amount
+            for quote in quotes
+                tr
+                    td
+                        a(href="/quotes/viewQuote#{quote.Id}") #{quote.Name}
+                    td #{quote.Account_Name__c}
+                    td #{quote.Opportunity_Name__c}
+                    td #{quote.Quote_Owner__c}
+                    td #{quote.SBQQ__NetAmount__c}
