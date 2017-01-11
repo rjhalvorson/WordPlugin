@@ -72,6 +72,8 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var connect = require('./routes/connect');
 var quotes = require('./routes/quotes');
+var document = require('./routes/document');
+var quoteterms = require('./routes/quoteterms');
 
 // Initialize Express
 var app = express();
@@ -102,6 +104,8 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/connect', connect);
 app.use('/quotes', quotes);
+app.use('/document', document);
+app.use('/quoteterms', quoteterms);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

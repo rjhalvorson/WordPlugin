@@ -10,3 +10,18 @@ block content
     p #{quote.SBQQ__PaymentTerms__c}
     p #{quote.SBQQ__Status__c}
     p #{quote.SBQQ__NetAmount__c}
+    br
+    h1 #{quote.Name} Documents
+    table
+        tr
+            th Document Name
+            th Output Format
+            th Version
+            th Link
+        for doc in docs
+            tr
+                td #{doc.Name}
+                td #{doc.SBQQ__OutputFormat__c}
+                td #{doc.SBQQ__Version__c}
+                td
+                    a(href="/document/download#{doc.SBQQ__ViewRecordId__c}" target="_blank") Click to Download

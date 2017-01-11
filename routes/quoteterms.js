@@ -8,11 +8,7 @@ var jsforce = require('jsforce');
 var dbHelper = new(require('../database/db'))();
 var cAppConfig = require('../ws-conf').connectedAppConfig;
 
-router.get('/viewQuotes', function(req, res){
-
-    console.log(req.user.sessionID);
-    console.log(req.user);
-    console.log(req.user.accessToken);
+router.get('/viewTerms', function(req, res){
 
     dbHelper.getUserData(
         req.user.id,
@@ -30,33 +26,37 @@ router.get('/viewQuotes', function(req, res){
                     accessToken : userDetails.dts[0].AccessToken,
                     refreshToken : userDetails.dts[0].RefreshToken
                 });
-
-
                 conn.on("refresh", function(accessToken, res) {
                     // Refresh event will be fired when renewed access token
                     // to store it in your storage for next request
                 });
 
-                conn.sobject("SBQQ__Quote__c")
+                var apexRestUrl = userDetails.dts[0].InstanceUrl + 'services/apexrest/getTermSearchFields';
+                conn.apex.get(apexRestUrl, {});
+
+
+                conn.sobject("SBQQ__QuoteTerm__c")
                     .find(
                         // conditions in JSON object
-                        {},
+                        {
+                            SBQQ__Active__c: { $eq : true }
+                        },
                         // fields in JSON object
-                        { Id: 1,
+                        {
+                            Id: 1,
                             Name: 1,
-                            Account_Name__c : 1,
-                            Opportunity_Name__c : 1,
-                            Quote_Owner__c : 1,
-                            SBQQ__NetAmount__c : 1,
-                            SBQQ__PaymentTerms__c : 1,
-                            SBQQ__Status__c: 1 }
-                    )
+                            SBQQ__Body__c: 1,
+                            SBQQ__Status__c: 1,
+                            Category__c: 1,
+                            Document_Type__c: 1
+
+                        })
                     .execute(function(err, result) {
                         if (err) {
                             return console.error(err);
                         }
-                        res.render('quotes', {
-                            quotes: result
+                        res.render('quoteterms', {
+                            terms: result
                         });
                     });
             }
@@ -64,7 +64,7 @@ router.get('/viewQuotes', function(req, res){
     );
 });
 
-router.get('/viewQuote:quoteId', function(req, res){
+router.get('/viewTerm:termId', function(req, res){
     dbHelper.getUserData(
         req.user.id,
         function callback(error, userDetails) {
@@ -86,7 +86,7 @@ router.get('/viewQuote:quoteId', function(req, res){
                     // to store it in your storage for next request
                 });
 
-                conn.sobject("SBQQ__Quote__c")
+                conn.sobject("SBQQ__QuoteTerm__c")
                     .find(
                         // conditions in JSON object
                         {
