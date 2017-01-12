@@ -13,7 +13,7 @@ var http = require('http');
 router.get('/download:docId', function(req, res){
 
     dbHelper.getUserData(
-        req.user.id,
+        req.user.profileId,
         function callback(error, userDetails) {
             if (error) {
                 throw error;

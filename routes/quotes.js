@@ -10,12 +10,8 @@ var cAppConfig = require('../ws-conf').connectedAppConfig;
 
 router.get('/viewQuotes', function(req, res){
 
-    console.log(req.user.sessionID);
-    console.log(req.user);
-    console.log(req.user.accessToken);
-
     dbHelper.getUserData(
-        req.user.id,
+        req.user.profileId,
         function callback(error, userDetails) {
             if (error) {
                 throw error;
@@ -66,7 +62,7 @@ router.get('/viewQuotes', function(req, res){
 
 router.get('/viewQuote:quoteId', function(req, res){
     dbHelper.getUserData(
-        req.user.id,
+        req.user.profileId,
         function callback(error, userDetails) {
             if (error) {
                 throw error;

@@ -2,15 +2,17 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var jsforce = require('jsforce');
+var dbHelper = new(require('../database/db'))();
 
-router.get('/', function(req, res) {
-    if(!req.user) {
-        req.session.destroy();
-        req.logout();
-        return res.redirect('/index');
-    }
-    res.render('home', {
-        user: req.user
+/* GET home page. */
+router.get('/', function handleRequest(req, res) {
+    dbHelper.getUserData(req.sessionID, function callback(error, userData) {
+        if (error !== null) {
+            throw error;
+        } else {
+            userData.sessionID = req.sessionID;
+            res.render('index', userData);
+        }
     });
 });
 

@@ -11,7 +11,7 @@ var cAppConfig = require('../ws-conf').connectedAppConfig;
 router.get('/viewTerms', function(req, res){
 
     dbHelper.getUserData(
-        req.user.id,
+        req.user.profileId,
         function callback(error, userDetails) {
             if (error) {
                 throw error;
@@ -66,7 +66,7 @@ router.get('/viewTerms', function(req, res){
 
 router.get('/viewTerm:termId', function(req, res){
     dbHelper.getUserData(
-        req.user.id,
+        req.user.profileId,
         function callback(error, userDetails) {
             if (error) {
                 throw error;
