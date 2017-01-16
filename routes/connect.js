@@ -6,10 +6,34 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var csrf = require('csurf');
+var cookie = require('cookie');
 var authenticationOptions = {};
 var dbHelper = new(require('../database/db'))();
+var cookieParser = require('cookie-parser');
+var io = require('../app');
+var util = require('../utility');
 
 authenticationOptions = {display: "popup"};
+
+io.on('connection', function onConnection(socket) {
+    var jsonCookie = cookie.parse(socket.handshake.headers.cookie);
+    var sessionID = cookieParser.signedCookie(jsonCookie.nodecookie, 'keyboard cat');
+    socket.join(sessionID);
+
+    console.log('connected on 3002');
+    console.log(sessionID);
+    console.log(jsonCookie);
+
+    socket.on('downloadDoc',
+        function download(docId) {
+        console.log("received request to download ");
+        util.getBase64File(docId, sessionID, function sendDoc(myDoc){
+            io.to(sessionID).emit('doc_ready', myDoc);
+        });
+    });
+
+});
+
 
 router.use(csrf());
 
@@ -70,9 +94,9 @@ router.get('/auth/forcedotcom/callback', function handleRequest(req, res) {
                         if (error) {
                             throw error;
                         } else {
-                            res.render('home', {
-                                user: req.user
-                            });
+                            io.to(req.sessionID).emit('auth_success', req.user);
+                            console.log('This is the Emitting ID: ' + req.sessionID);
+                            res.render('auth_complete');
                         }
                     }
                 );

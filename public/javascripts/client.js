@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
+ * See LICENSE in the project root for license information.
+ */
 'use strict';
 
 var socket = io.connect('https://localhost:3002', { secure: true });
@@ -6,21 +10,24 @@ var tokenLifetime = 120000;
 var timers = {};
 
 socket.on('auth_success', function onAuthSuccess(authenticationData) {
-    console.log('here');
+    // Show the 'connected' UI for the authenticated provider
 
     $('#' +  'initial_login').css('display', 'none');
     $('#' + 'get_started').css('display', 'block');
 
-    console.log(authenticationData);
+    console.log("authorization received");
+
     // Update the Office host
     Office.context.document.setSelectedDataAsync(
-        authenticationData.accessToken.params.instance_url + ' connected \n' +
+        authenticationData.providerName + ' connected \n' +
         'User: ' + authenticationData.displayName
     );
 });
 
-/*
-socket.on('doc_ready', function openDocument(myBase64) {
+socket.on('doc_ready', function loadDocument(quoteDoc) {
+    console.log('document received');
+    console.log(document);
+
     Word.run(function (context) {
 
         // Create a proxy object for the document.
@@ -33,19 +40,23 @@ socket.on('doc_ready', function openDocument(myBase64) {
         var mySelection = thisDocument.getSelection();
 
         // Queue a command to insert the file into the current document.
-        mySelection.insertFileFromBase64(myBase64, "replace");
+        mySelection.insertFileFromBase64(quoteDoc, "replace");
 
         // Synchronize the document state by executing the queued commands,
         // and return a promise to indicate task completion.
         return context.sync()
-            .catch(function (error) {
-                console.log('Error: ' + JSON.stringify(error));
-                if (error instanceof OfficeExtension.Error) {
-                    console.log('Debug info: ' + JSON.stringify(error.debugInfo));
-                }
+            .then(function () {
+                // Now we want to get all of the content controls.
+                getAllContentControls();
             });
-    });
-}); */
+    })
+        .catch(function (error) {
+            console.log('Error: ' + JSON.stringify(error));
+            if (error instanceof OfficeExtension.Error) {
+                console.log('Debug info: ' + JSON.stringify(error.debugInfo));
+            }
+        });
+});
 
 socket.on('disconnect_complete', function onDisconnectComplete(providerName) {
     clearTimeout(timers[providerName]);
@@ -66,3 +77,12 @@ function silentDisconnect(sessionID, providerName) {
         'width=500,height=500,centerscreen=1,menubar=0,toolbar=0,location=0,personalbar=0,status=0,titlebar=0,dialog=1'
     );
 }
+
+$(document).ready(function(){
+    $('.docLink').click(function(){
+        //var myId = $(this).attr('documentId');
+        socket.emit('downloadDoc', $(this).attr('documentId'));
+        console.log($(this).attr('documentId'));
+    });
+
+})

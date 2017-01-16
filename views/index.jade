@@ -1,8 +1,18 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to Redling for CPQ
-  p
-    a(href="connect/auth/forcedotcom/#{sessionID}") Login to Salesforce
-    span  to get started
+
+  h1.ms-font-xl Welcome to QTC Word Plugin
+
+  div(class='ms-List')
+    div(id=('initial_login'), style=('display:block') class='ms-ListItem')
+      div(
+      class='ms-ListItem-primaryText ms-Link',
+      title='Connect to Salesforce',
+      onclick="window.open('https://localhost:3000/connect/auth/forcedotcom/#{sessionID}', 'AuthPopup', 'width=500,height=600,centerscreen=1,menubar=0,toolbar=0,location=0,personalbar=0,status=0,titlebar=0,dialog=1')") Sign in with Salesforce
+      span(class='ms-ListItem-secondaryText') Status: Disconnected
+    div(id=('get_started'), style=('display:none') class='ms-ListItem')
+      div
+        p Congratulations - You have Successfully Logged Into QTC Plugin
+        p
+          a(href="https://localhost:3000/home") Click to Start

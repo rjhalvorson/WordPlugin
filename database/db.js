@@ -64,6 +64,33 @@ dbHelper.prototype.getUserData = function getUserData(sfid, callback) {
     });
 };
 
+dbHelper.prototype.getUserDataSessionID = function getUserData(SessionID, callback) {
+    var userData = {};
+    var db = new sqlite3.Database(dbFile);
+    var getUserDataStatement =
+        'SELECT AccessToken, RefreshToken, InstanceUrl ' +
+        'FROM UserData WHERE SessionID = $SessionID';
+
+    userData.SessionID = SessionID;
+
+    db.serialize(function executeSelect() {
+        db.all(
+            getUserDataStatement,
+            {
+                $SessionID: SessionID
+            },
+            function queryExecute(error, userDetails){
+                if(error !== null){
+                    throw error;
+                } else{
+                    userData.dts = userDetails;
+                    callback(error, userData);
+                }
+            }
+        );
+    });
+};
+
 dbHelper.prototype.saveAccessToken =
     function saveAccessToken(sfid, sessionID, displayName, accessToken, refreshToken, instanceUrl, callback) {
         var db = new sqlite3.Database(dbFile);
