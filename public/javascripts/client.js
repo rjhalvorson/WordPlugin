@@ -17,11 +17,7 @@ socket.on('auth_success', function onAuthSuccess(authenticationData) {
 
     console.log("authorization received");
 
-    // Update the Office host
-    Office.context.document.setSelectedDataAsync(
-        authenticationData.providerName + ' connected \n' +
-        'User: ' + authenticationData.displayName
-    );
+    window.location.href = 'https://localhost:3000/home';
 });
 
 socket.on('doc_ready', function loadDocument(quoteDoc) {

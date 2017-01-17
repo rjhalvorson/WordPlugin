@@ -8,8 +8,8 @@
     <Version>1.0.0.0</Version>
     <ProviderName>OfficeDev</ProviderName>
     <DefaultLocale>en-US</DefaultLocale>
-    <DisplayName DefaultValue="Salesforce QTC"/>
-    <Description DefaultValue="Salesforce Quote-to-Cash Office Plugin"/>
+    <DisplayName DefaultValue="Salesforce CPQ"/>
+    <Description DefaultValue="Salesforce CPQ Word Plugin"/>
     <SupportUrl DefaultValue="https://github.com/officedev/office-add-in-nodejs-serverauth/issues"/>
     <Hosts>
         <Host Name="Document"/>
