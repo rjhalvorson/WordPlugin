@@ -6,13 +6,16 @@ html
     title= title
     meta(name='viewport', content='width=device-width', initial-scale='1')
     script(type='text/javascript' src='https://appsforoffice.microsoft.com/lib/beta/hosted/office.js')
-      script(type='text/javascript' src='/bower_components/office-ui-fabric/dist/js/jquery.fabric.js')
-    link(rel='stylesheet', href='bower_components/office-ui-fabric/dist/css/fabric.components.css')
-    link(rel='stylesheet', href='bower_components/office-ui-fabric/dist/css/fabric.css')
+    link(rel='stylesheet', href='/stylesheets/fabric.css')
+    link(rel='stylesheet', href='/stylesheets/fabric.components.css')
+    link(rel='stylesheet', href='/stylesheets/NavBar.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
     link(rel='icon', href='/images/favicon.ico', type='image/x-icon')
-  body(class="ms-font-m")
-    block content
-    script(type='text/javascript' src='https://cdn.socket.io/socket.io-1.3.7.js')
     script(type='text/javascript' src='https://code.jquery.com/jquery-2.1.4.min.js')
+    script(type='text/javascript' src='bower_components/office-ui-fabric/dist/js/jquery.fabric.min.js')
+    script(type='text/javascript' src='/javascripts/Jquery.NavBar.js')
+  body(class="ms-font-m")
+    block navContent
+    block mainContent
+    script(type='text/javascript' src='https://cdn.socket.io/socket.io-1.3.7.js')
     script(type='text/javascript' src='/javascripts/client.js')
