@@ -76,18 +76,33 @@ function silentDisconnect(sessionID, providerName) {
 
 $(document).ready(function(){
     $('.docLink').click(function(){
-        //var myId = $(this).attr('documentId');
         socket.emit('downloadDoc', $(this).attr('documentId'));
         console.log($(this).attr('documentId'));
     });
-
-})
+});
 
 $(document).ready(function(){
-    $('#termSearch').click(function(){
-        //var myId = $(this).attr('documentId');
-        socket.emit('searchTerms', $(this).attr('documentId'));
-        console.log($(this).attr('documentId'));
-    });
+var getSearchQuery = function (callback) {
+    var querySet = [];
+    $('.searchTermFields')
+        .map(function () {
+            var query = {};
+            query.fieldApi = $('.termApiName Label', this).attr('searchField');
+            query.operator = $('.termOperator Select', this).val();
+            if ($('.termSearchValue Label', this).attr('fieldType') == "PICKLIST") {
+                query.searchValue = $('.termSearchValue select', this).val();
+            } else {
+                query.searchValue = $('.termSearchValue input', this).val();
+            }
+            querySet.push(query);
+        });
+    console.log(querySet);
+    callback(querySet);
+}
 
-})
+    $('#termSearch').click(function(){
+        getSearchQuery(function (searchCriteria) {
+            socket.emit('searchTerms', searchCriteria);
+        })
+    });
+});

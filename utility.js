@@ -81,6 +81,7 @@ var getSearchFields = function(fs, meta, sendFields){
                 var searchField = {};
                 searchField.label = fs[j].fieldlabel;
                 searchField.type = fs[j].fieldtype;
+                searchField.apiName = fs[j].fieldpath;
                 if(fs[j].fieldtype === "PICKLIST"){
                     for(var k = 0; k < meta[i].picklistValues.length; k++){
                         searchField.fVals = meta[i].picklistValues;

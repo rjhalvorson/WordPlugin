@@ -32,6 +32,11 @@ io.on('connection', function onConnection(socket) {
         });
     });
 
+    socket.on('searchTerms',
+        function download(searchDom) {
+            console.log("received request to search ");
+        });
+
 });
 
 
