@@ -82,3 +82,12 @@ $(document).ready(function(){
     });
 
 })
+
+$(document).ready(function(){
+    $('#termSearch').click(function(){
+        //var myId = $(this).attr('documentId');
+        socket.emit('searchTerms', $(this).attr('documentId'));
+        console.log($(this).attr('documentId'));
+    });
+
+})

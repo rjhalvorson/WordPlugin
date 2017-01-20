@@ -7,8 +7,26 @@ var passport = require('passport');
 var jsforce = require('jsforce');
 var dbHelper = new(require('../database/db'))();
 var cAppConfig = require('../ws-conf').connectedAppConfig;
+var util = require('../utility');
+
+
+router.get('/viewTermSearch', function(req, res) {
+
+    util.getFieldsInSet(req.sessionID, 'SBQQ__QuoteTerm__c', function (data) {
+        console.log(data);
+        res.render('termSearch', {
+            fields: data
+        });
+    });
+
+});
+
 
 router.get('/viewTerms', function(req, res){
+
+    util.getFieldsInSet(req.sessionID, 'SBQQ__QuoteTerm__c', function(res){
+        console.log(res);
+    });
 
     dbHelper.getUserData(
         req.user.profileId,
@@ -30,10 +48,6 @@ router.get('/viewTerms', function(req, res){
                     // Refresh event will be fired when renewed access token
                     // to store it in your storage for next request
                 });
-
-                var apexRestUrl = userDetails.dts[0].InstanceUrl + 'services/apexrest/getTermSearchFields';
-                conn.apex.get(apexRestUrl, {});
-
 
                 conn.sobject("SBQQ__QuoteTerm__c")
                     .find(

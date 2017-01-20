@@ -11,6 +11,7 @@
     <DisplayName DefaultValue="Salesforce CPQ"/>
     <Description DefaultValue="Salesforce CPQ Word Plugin"/>
     <SupportUrl DefaultValue="https://github.com/officedev/office-add-in-nodejs-serverauth/issues"/>
+    <IconUrl DefaultValue="https://localhost:3000/images/sf_icon.png" />
     <Hosts>
         <Host Name="Document"/>
         <Host Name="Workbook"/>
