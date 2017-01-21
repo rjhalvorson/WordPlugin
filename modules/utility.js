@@ -1,9 +1,9 @@
 /**
  * Created by rhalvorson on 1/15/17.
  */
-var dbHelper = new(require('./database/db'))();
+var dbHelper = new(require('./../database/db'))();
 var jsforce = require('jsforce');
-var cAppConfig = require('./ws-conf').connectedAppConfig;
+var cAppConfig = require('./../models/ws-conf').connectedAppConfig;
 var fs = require('fs');
 var base64 = require('file-base64');
 
@@ -23,7 +23,7 @@ var getBase64File = function(docId, sessionId, sendDoc) {
             });
         });
     });
-}
+};
 
 
 var getjsForceConnection = function(sessionId, sendConn){
@@ -47,7 +47,7 @@ var getjsForceConnection = function(sessionId, sendConn){
                 sendConn(conn);
             }
         });
-}
+};
 
 var getFieldsInSet = function(sessionId, object, sendSet){
     getjsForceConnection(sessionId, function(conn){
@@ -70,7 +70,7 @@ var getFieldsInSet = function(sessionId, object, sendSet){
             });
         });
     });
-}
+};
 
 
 var getSearchFields = function(fs, meta, sendFields){

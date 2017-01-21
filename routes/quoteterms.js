@@ -6,8 +6,8 @@ var router = express.Router();
 var passport = require('passport');
 var jsforce = require('jsforce');
 var dbHelper = new(require('../database/db'))();
-var cAppConfig = require('../ws-conf').connectedAppConfig;
-var util = require('../utility');
+var cAppConfig = require('../models/ws-conf').connectedAppConfig;
+var util = require('../modules/utility');
 
 
 router.get('/viewTermSearch', function(req, res) {

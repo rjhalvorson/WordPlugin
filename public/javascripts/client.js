@@ -4,6 +4,7 @@
  */
 'use strict';
 
+
 var socket = io.connect('https://localhost:3002', { secure: true });
 // The token will only live in our database for 2 minutes
 var tokenLifetime = 120000;
@@ -15,14 +16,10 @@ socket.on('auth_success', function onAuthSuccess(authenticationData) {
     $('#' +  'initial_login').css('display', 'none');
     $('#' + 'get_started').css('display', 'block');
 
-    console.log("authorization received");
-
     window.location.href = 'https://localhost:3000/home';
 });
 
 socket.on('doc_ready', function loadDocument(quoteDoc) {
-    console.log('document received');
-    console.log(document);
 
     Word.run(function (context) {
 
@@ -61,6 +58,10 @@ socket.on('disconnect_complete', function onDisconnectComplete(providerName) {
     Office.context.document.setSelectedDataAsync(providerName + ' disconnected');
 });
 
+socket.on('termSearchResults', function populateSearchResults(termSearchResults) {
+    createTermTable(termSearchResults);
+});
+
 // The initialize function must be run each time a new page is loaded.
 Office.initialize = function officeInitialize(reason) {
     $(document).ready(function officeReady() {});
@@ -77,7 +78,6 @@ function silentDisconnect(sessionID, providerName) {
 $(document).ready(function(){
     $('.docLink').click(function(){
         socket.emit('downloadDoc', $(this).attr('documentId'));
-        console.log($(this).attr('documentId'));
     });
 });
 
@@ -90,13 +90,12 @@ var getSearchQuery = function (callback) {
             query.fieldApi = $('.termApiName Label', this).attr('searchField');
             query.operator = $('.termOperator Select', this).val();
             if ($('.termSearchValue Label', this).attr('fieldType') == "PICKLIST") {
-                query.searchValue = $('.termSearchValue select', this).val();
+                query.sVal = $('.termSearchValue select', this).val();
             } else {
-                query.searchValue = $('.termSearchValue input', this).val();
+                query.sVal = $('.termSearchValue input', this).val();
             }
             querySet.push(query);
         });
-    console.log(querySet);
     callback(querySet);
 }
 
@@ -104,5 +103,51 @@ var getSearchQuery = function (callback) {
         getSearchQuery(function (searchCriteria) {
             socket.emit('searchTerms', searchCriteria);
         })
+    });
+});
+
+function createTermTable(searchTerms) {
+
+    var tbl = "<table class='ms-Table'><th>Action</th><th>Name</th><th>Status</th><th style='width:50%'>Body</th>";
+    for (var i = 0; i < searchTerms.length; i++){
+        tbl = tbl + "<tr>";
+        tbl = tbl + "<td>" + "<button class='ms-Button ms-Button--command insertButton' value=searchTerms[i].Name><span class='ms-Button-icon'><i class='ms-Icon ms-Icon--plus'></i></span> <span class='ms-Button-label'>Insert</span><span class='ms-Button-description'>Inserts Quote Term into Document</span></button>" + "</td>";
+        tbl = tbl + "<td>" + "<a href='/quotes/viewQuote'" + searchTerms[i].Id + ">" + searchTerms[i].Name + "</a>" + "</td>";
+        tbl = tbl + "<td>" + searchTerms[i].SBQQ__Status__c + "</td>";
+        tbl = tbl + "<td class='termContainer'>" + searchTerms[i].SBQQ__Body__c + "</td>";
+        tbl = tbl + "</tr>";
+    }
+    tbl = tbl + "</table>";
+
+    var divContainer = document.getElementById("termResults");
+    divContainer.innerHTML = "";
+    divContainer.innerHTML = tbl;
+}
+
+$(document).ready(function(){
+    $(document).on("click", ".insertButton", function () {
+        var htmlBody = $(this).parents('tr').find(".termContainer").html();
+        // Run a batch operation against the Word object model.
+        Word.run(function (context) {
+
+            // Create a proxy object for the document body.
+            var range = context.document.getSelection();
+            // Queue a commmand to insert HTML in to the beginning of the body.
+            range.insertHtml(htmlBody, Word.InsertLocation.replace);
+            //body.insertText('text here', Word.InsertLocation.start);
+
+            // Synchronize the document state by executing the queued commands,
+            // and return a promise to indicate task completion.
+            return context.sync().then(function () {
+                console.log('HTML added to the beginning of the document body.');
+            });
+        })
+            .catch(function (error) {
+                console.log('Error: ' + JSON.stringify(error));
+                if (error instanceof OfficeExtension.Error) {
+                    console.log('Debug info: ' + JSON.stringify(error.debugInfo));
+                }
+            });
+
     });
 });

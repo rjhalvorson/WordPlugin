@@ -54,6 +54,34 @@ $(document).ready(function () {
 
 });
 
+$(document).ready(function() {
+    // File Picker demo fixes
+    if ($('.ms-FilePicker').length > 0) {
+        $('.ms-FilePicker').css({
+            "position": "absolute !important"
+        });
+
+        $('.ms-Panel').FilePicker();
+    } else {
+        if ($.fn.Table) {
+            $('.ms-Table').Table();
+        }
+    }
+
+    // Vanilla JS Components
+    if (typeof fabric !== "undefined") {
+        if ('Table' in fabric) {
+            var elements = document.querySelectorAll('.ms-Table');
+            var i = elements.length;
+            var component;
+            while(i--) {
+                component = new fabric['Table'](elements[i]);
+            }
+        }
+    }
+
+});
+
 $(document).ready(function () {
     if ($.fn.Dropdown) {
         $('.ms-Dropdown').Dropdown();

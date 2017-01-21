@@ -7,7 +7,7 @@ var cookie = require('cookie');
 var cookieParser = require('cookie-parser');
 var jsforce = require('jsforce');
 var dbHelper = new(require('../database/db'))();
-var cAppConfig = require('../ws-conf').connectedAppConfig;
+var cAppConfig = require('../models/ws-conf').connectedAppConfig;
 var fs = require('fs');
 var io = require('../app');
 

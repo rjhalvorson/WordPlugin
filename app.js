@@ -9,7 +9,7 @@ var passport = require('passport');
 var morgan = require('morgan');
 var session = require('express-session');
 var jsforce = require('jsforce');
-var cAppConfig = require('./ws-conf').connectedAppConfig;
+var cAppConfig = require('./models/ws-conf').connectedAppConfig;
 var ONE_DAY_MILLIS = 86400000;
 
 var app = express();

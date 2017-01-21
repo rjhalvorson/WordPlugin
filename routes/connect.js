@@ -11,7 +11,8 @@ var authenticationOptions = {};
 var dbHelper = new(require('../database/db'))();
 var cookieParser = require('cookie-parser');
 var io = require('../app');
-var util = require('../utility');
+var util = require('../modules/utility');
+var ts = require('../modules/termSearch');
 
 authenticationOptions = {display: "popup"};
 
@@ -21,8 +22,6 @@ io.on('connection', function onConnection(socket) {
     socket.join(sessionID);
 
     console.log('connected on 3002');
-    console.log(sessionID);
-    console.log(jsonCookie);
 
     socket.on('downloadDoc',
         function download(docId) {
@@ -32,11 +31,12 @@ io.on('connection', function onConnection(socket) {
         });
     });
 
-    socket.on('searchTerms',
-        function download(searchDom) {
-            console.log("received request to search ");
-        });
-
+    socket.on('searchTerms', function download(searchDom) {
+        console.log("received request to search ");
+        ts.getQuoteTerms(sessionID, searchDom, function(termResults){
+            io.to(sessionID).emit('termSearchResults', termResults);
+        })
+    });
 });
 
 
