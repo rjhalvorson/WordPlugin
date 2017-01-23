@@ -1,22 +1,22 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<!--
- * Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license.
- * See LICENSE in the project root for license information.
- -->
-<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TaskPaneApp">
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xsi:type="TaskPaneApp">
     <Id>a6f202ce-ae82-43f7-82eb-5eefe6ef558e</Id>
     <Version>1.0.0.0</Version>
-    <ProviderName>OfficeDev</ProviderName>
+    <ProviderName>Salesforce</ProviderName>
     <DefaultLocale>en-US</DefaultLocale>
-    <DisplayName DefaultValue="Salesforce CPQ"/>
-    <Description DefaultValue="Salesforce CPQ Word Plugin"/>
-    <SupportUrl DefaultValue="https://github.com/officedev/office-add-in-nodejs-serverauth/issues"/>
+    <DisplayName DefaultValue="Salesforce CPQ" />
+    <Description DefaultValue="MS Word CPQ Plugin" />
+    <!-- Icon for your add-in. Used on installation screens and the add-ins dialog. -->
     <IconUrl DefaultValue="https://localhost:3000/images/sf_icon.png" />
     <Hosts>
-        <Host Name="Document"/>
-        <Host Name="Workbook"/>
-        <Host Name="Presentation"/>
-        <Host Name="Project"/>
+        <Host Name = "Document"/>
+        <Host Name = "Workbook"/>
+        <Host Name = "Presentation"/>
+        <Host Name = "Project"/>
+        <Host Name = "Database" />
     </Hosts>
     <DefaultSettings>
         <SourceLocation DefaultValue="https://localhost:3000"/>
@@ -26,5 +26,103 @@
         <AppDomain>https://localhost:3000</AppDomain>
         <AppDomain>https://localhost:3001</AppDomain>
         <AppDomain>https://localhost:3002</AppDomain>
+        <AppDomain>https://localhost:3000/home</AppDomain>
     </AppDomains>
+    <!-- Begin Add-in Commands Mode integration. -->
+    <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+
+        <!-- The Hosts node is required. -->
+        <Hosts>
+            <!-- Each host can have a different set of commands. -->
+            <!-- Excel host is Workbook, Word host is Document, and PowerPoint host is Presentation. -->
+            <!-- Make sure the hosts you override match the hosts declared in the top section of the manifest. -->
+            <Host xsi:type="Document">
+                <!-- Form factor. Currently only DesktopFormFactor is supported. -->
+                <DesktopFormFactor>
+                    <!--"This code enables a customizable message to be displayed when the add-in is loaded successfully upon individual install."-->
+                    <GetStarted>
+                        <!-- Title of the Getting Started callout. resid points to a ShortString resource -->
+                        <Title resid="CPQ.GetStarted.Title"/>
+
+                        <!-- Description of the Getting Started callout. resid points to a LongString resource -->
+                        <Description resid="CPQ.GetStarted.Description"/>
+
+                        <!-- Point to a url resource which details how the add-in should be used. -->
+                        <LearnMoreUrl resid="CPQ.GetStarted.LearnMoreUrl"/>
+                    </GetStarted>
+                    <!-- Function file is a HTML page that includes the JavaScript where functions for ExecuteAction will be called.
+                      Think of the FunctionFile as the code behind ExecuteFunction. -->
+                    <FunctionFile resid="CPQ.DesktopFunctionFile.Url" />
+
+                    <!-- PrimaryCommandSurface is the main Office Ribbon. -->
+                    <ExtensionPoint xsi:type="PrimaryCommandSurface">
+                        <!-- Use OfficeTab to extend an existing Tab. Use CustomTab to create a new tab. -->
+                        <OfficeTab id="TabHome">
+                            <!-- Ensure you provide a unique id for the group. Recommendation for any IDs is to namespace using your company name. -->
+                            <Group id="CPQ.Group1">
+                                <!-- Label for your group. resid must point to a ShortString resource. -->
+                                <Label resid="CPQ.Group1Label" />
+                                <!-- Icons. Required sizes 16,32,80, optional 20, 24, 40, 48, 64. Strongly recommended to provide all sizes for great UX. -->
+                                <!-- Use PNG icons. All URLs on the resources section must use HTTPS. -->
+                                <Icon>
+                                    <bt:Image size="16" resid="CPQ.tpicon_16x16" />
+                                    <bt:Image size="32" resid="CPQ.tpicon_32x32" />
+                                    <bt:Image size="80" resid="CPQ.tpicon_80x80" />
+                                </Icon>
+
+                                <!-- Control. It can be of type "Button" or "Menu". -->
+                                <Control xsi:type="Button" id="CPQ.TaskpaneButton">
+                                    <Label resid="CPQ.TaskpaneButton.Label" />
+                                    <Supertip>
+                                        <!-- ToolTip title. resid must point to a ShortString resource. -->
+                                        <Title resid="CPQ.TaskpaneButton.Label" />
+                                        <!-- ToolTip description. resid must point to a LongString resource. -->
+                                        <Description resid="CPQ.TaskpaneButton.Tooltip" />
+                                    </Supertip>
+                                    <Icon>
+                                        <bt:Image size="16" resid="CPQ.tpicon_16x16" />
+                                        <bt:Image size="32" resid="CPQ.tpicon_32x32" />
+                                        <bt:Image size="80" resid="CPQ.tpicon_80x80" />
+                                    </Icon>
+
+                                    <!-- This is what happens when the command is triggered (E.g. click on the Ribbon). Supported actions are ExecuteFunction or ShowTaskpane. -->
+                                    <Action xsi:type="ShowTaskpane">
+                                        <TaskpaneId>ButtonId1</TaskpaneId>
+                                        <!-- Provide a url resource id for the location that will be displayed on the task pane. -->
+                                        <SourceLocation resid="CPQ.Taskpane.Url" />
+                                    </Action>
+                                </Control>
+                            </Group>
+                        </OfficeTab>
+                    </ExtensionPoint>
+                </DesktopFormFactor>
+            </Host>
+        </Hosts>
+
+        <!-- You can use resources across hosts and form factors. -->
+        <Resources>
+            <bt:Images>
+                <bt:Image id="CPQ.tpicon_16x16" DefaultValue="https://localhost:3000/images/taskpane_16x.png" />
+                <bt:Image id="CPQ.tpicon_32x32" DefaultValue="https://localhost:3000/images/taskpane_32x.png" />
+                <bt:Image id="CPQ.tpicon_80x80" DefaultValue="https://localhost:3000/images/taskpane_80x.png" />
+            </bt:Images>
+            <bt:Urls>
+                <bt:Url id="CPQ.DesktopFunctionFile.Url" DefaultValue="https://localhost:3000" />
+                <bt:Url id="CPQ.Taskpane.Url" DefaultValue="https://localhost:3000" />
+                <bt:Url id="CPQ.GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812" />
+            </bt:Urls>
+            <!-- ShortStrings max characters==125. -->
+            <bt:ShortStrings>
+                <bt:String id="CPQ.TaskpaneButton.Label" DefaultValue="CQP" />
+                <bt:String id="CPQ.Group1Label" DefaultValue="Salesforce CPQ" />
+                <bt:String id="CPQ.GetStarted.Title" DefaultValue="Welcome to Salesforce CPQ for Word!" />
+            </bt:ShortStrings>
+            <!-- LongStrings max characters==250. -->
+            <bt:LongStrings>
+                <bt:String id="CPQ.TaskpaneButton.Tooltip" DefaultValue="Cilck here to open Salesforce CPQ" />
+                <bt:String id="CPQ.GetStarted.Description" DefaultValue="Salesforce CPQ loaded succesfully. Go to the HOME tab and click the 'CPQ' button to get started." />
+            </bt:LongStrings>
+        </Resources>
+    </VersionOverrides>
+    <!-- End Add-in Commands Mode integration. -->
 </OfficeApp>

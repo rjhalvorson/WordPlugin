@@ -74,7 +74,8 @@ app.use(session({
         path: '/',
         httpOnly: false,
         secure: false,
-        maxAge: 7 * ONE_DAY_MILLIS
+        maxAge: 7 * ONE_DAY_MILLIS,
+        expires: 7 * ONE_DAY_MILLIS
     },
     saveUninitialized: true
 }));

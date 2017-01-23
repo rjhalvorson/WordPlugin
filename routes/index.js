@@ -6,15 +6,18 @@ var dbHelper = new(require('../database/db'))();
 
 /* GET home page. */
 router.get('/', function handleRequest(req, res) {
-    dbHelper.getUserData(req.sessionID, function callback(error, userData) {
+    dbHelper.getUserDataSessionID(req.sessionID, function callback(error, userData) {
         if (error !== null) {
             throw error;
         } else {
-            userData.sessionID = req.sessionID;
-            res.render('index', userData);
+            if(userData.dts.length > 0){
+                res.redirect('/home');
+            }else{
+                res.redirect('/index');
+            }
         }
     });
-});
+                    });
 
 router.get('/index', function(req, res){
     res.render('index', {

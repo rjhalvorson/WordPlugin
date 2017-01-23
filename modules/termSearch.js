@@ -19,8 +19,19 @@ var getQuoteTerms = function(sessionId, searchOb, sendData){
         })
 };
 
+var getQuoteTerm = function(sessionId, termId, sendData){
+    util.getjsForceConnection(sessionId, function(conn){
+        conn.sobject("SBQQ__QuoteTerm__c").retrieve(termId, function(err, term) {
+            if (err) {
+                return console.error(err);
+            }
+            sendData(term);
+        });
+    })
+};
+
 var getSearchString = function(criteria, callback){
-    var searchString = 'Select Id, Name, SBQQ__Status__c, SBQQ__Body__c From SBQQ__QuoteTerm__c';
+    var searchString = 'Select Id, Name, Font__c, Font_Size__c, SBQQ__Status__c, SBQQ__Body__c From SBQQ__QuoteTerm__c';
     for (var i = 0; i < criteria.length; i++) {
         if(i == 0){
             searchString = searchString + ' WHERE ';
@@ -38,3 +49,4 @@ var getSearchString = function(criteria, callback){
 
 exports.getSearchString = getSearchString;
 exports.getQuoteTerms = getQuoteTerms;
+exports.getQuoteTerm = getQuoteTerm;

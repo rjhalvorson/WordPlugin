@@ -35,7 +35,14 @@ io.on('connection', function onConnection(socket) {
         console.log("received request to search ");
         ts.getQuoteTerms(sessionID, searchDom, function(termResults){
             io.to(sessionID).emit('termSearchResults', termResults);
-        })
+        });
+    });
+
+    socket.on('getTerm', function sendTerm(termId){
+        console.log('received request for term');
+        ts.getQuoteTerm(sessionID, termId, function(termResult) {
+            io.to(sessionID).emit('termResult', termResult.SBQQ__Body__c, termResult.Font__c, termResult.Font_Size__c);
+        });
     });
 });
 

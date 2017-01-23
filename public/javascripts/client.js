@@ -24,16 +24,10 @@ socket.on('doc_ready', function loadDocument(quoteDoc) {
     Word.run(function (context) {
 
         // Create a proxy object for the document.
-        var thisDocument = context.document;
+        var thisDocument = context.application.createDocument(quoteDoc);
 
         // Queue a command to clear the body contents.
-        thisDocument.body.clear();
-
-        // Create a proxy object for the default selection.
-        var mySelection = thisDocument.getSelection();
-
-        // Queue a command to insert the file into the current document.
-        mySelection.insertFileFromBase64(quoteDoc, "replace");
+        thisDocument.open();
 
         // Synchronize the document state by executing the queued commands,
         // and return a promise to indicate task completion.
@@ -51,6 +45,42 @@ socket.on('doc_ready', function loadDocument(quoteDoc) {
         });
 });
 
+/*
+
+ socket.on('doc_ready', function loadDocument(quoteDoc) {
+
+ Word.run(function (context) {
+
+ // Create a proxy object for the document.
+ var thisDocument = context.document;
+
+ // Queue a command to clear the body contents.
+ thisDocument.body.clear();
+
+ // Create a proxy object for the default selection.
+ var mySelection = thisDocument.getSelection();
+
+ // Queue a command to insert the file into the current document.
+ mySelection.insertFileFromBase64(quoteDoc, "replace");
+
+ // Synchronize the document state by executing the queued commands,
+ // and return a promise to indicate task completion.
+ return context.sync()
+ .then(function () {
+ // Now we want to get all of the content controls.
+ getAllContentControls();
+ });
+ })
+ .catch(function (error) {
+ console.log('Error: ' + JSON.stringify(error));
+ if (error instanceof OfficeExtension.Error) {
+ console.log('Debug info: ' + JSON.stringify(error.debugInfo));
+ }
+ });
+ });
+
+ */
+
 socket.on('disconnect_complete', function onDisconnectComplete(providerName) {
     clearTimeout(timers[providerName]);
     $('#' + providerName + '_disconnected').css('display', 'block');
@@ -60,6 +90,40 @@ socket.on('disconnect_complete', function onDisconnectComplete(providerName) {
 
 socket.on('termSearchResults', function populateSearchResults(termSearchResults) {
     createTermTable(termSearchResults);
+});
+
+socket.on('termResult', function insertTerm(termBody, fontName, fontSize){
+    Word.run(function (context) {
+
+        // Create a proxy object for the document body.
+        var range = context.document.getSelection();
+        // Queue a commmand to insert HTML in to the beginning of the body.
+        range.insertHtml(termBody, Word.InsertLocation.replace);
+        //body.insertText('text here', Word.InsertLocation.start);
+
+        // Synchronize the document state by executing the queued commands,
+        // and return a promise to indicate task completion.
+        return context.sync().then(function () {
+
+            // Create a proxy object for the font object on the first paragraph in the collection.
+            var font = range.font;
+
+            // Queue a set of property value changes on the font proxy object.
+            font.size = fontSize;
+            font.name = fontName;
+
+            return context.sync().then(function () {
+                console.log('HTML added to the beginning of the document body.');
+
+            });
+        });
+    })
+        .catch(function (error) {
+            console.log('Error: ' + JSON.stringify(error));
+            if (error instanceof OfficeExtension.Error) {
+                console.log('Debug info: ' + JSON.stringify(error.debugInfo));
+            }
+        });
 });
 
 // The initialize function must be run each time a new page is loaded.
@@ -78,6 +142,7 @@ function silentDisconnect(sessionID, providerName) {
 $(document).ready(function(){
     $('.docLink').click(function(){
         socket.emit('downloadDoc', $(this).attr('documentId'));
+        window.open('', '_self', ''); window.close();
     });
 });
 
@@ -111,7 +176,7 @@ function createTermTable(searchTerms) {
     var tbl = "<table class='ms-Table'><th>Action</th><th>Name</th><th>Status</th><th style='width:50%'>Body</th>";
     for (var i = 0; i < searchTerms.length; i++){
         tbl = tbl + "<tr>";
-        tbl = tbl + "<td>" + "<button class='ms-Button ms-Button--command insertButton' value=searchTerms[i].Name><span class='ms-Button-icon'><i class='ms-Icon ms-Icon--plus'></i></span> <span class='ms-Button-label'>Insert</span><span class='ms-Button-description'>Inserts Quote Term into Document</span></button>" + "</td>";
+        tbl = tbl + "<td>" + "<button class='ms-Button ms-Button--command insertButton' value='" + searchTerms[i].Id +"'><span class='ms-Button-icon'><i class='ms-Icon ms-Icon--plus'></i></span> <span class='ms-Button-label'>Insert</span><span class='ms-Button-description'>Inserts Quote Term into Document</span></button>" + "</td>";
         tbl = tbl + "<td>" + "<a href='/quotes/viewQuote'" + searchTerms[i].Id + ">" + searchTerms[i].Name + "</a>" + "</td>";
         tbl = tbl + "<td>" + searchTerms[i].SBQQ__Status__c + "</td>";
         tbl = tbl + "<td class='termContainer'>" + searchTerms[i].SBQQ__Body__c + "</td>";
@@ -126,28 +191,8 @@ function createTermTable(searchTerms) {
 
 $(document).ready(function(){
     $(document).on("click", ".insertButton", function () {
-        var htmlBody = $(this).parents('tr').find(".termContainer").html();
+        socket.emit("getTerm", $(this).attr('value'));
+        window.open('', '_self', ''); window.close();
         // Run a batch operation against the Word object model.
-        Word.run(function (context) {
-
-            // Create a proxy object for the document body.
-            var range = context.document.getSelection();
-            // Queue a commmand to insert HTML in to the beginning of the body.
-            range.insertHtml(htmlBody, Word.InsertLocation.replace);
-            //body.insertText('text here', Word.InsertLocation.start);
-
-            // Synchronize the document state by executing the queued commands,
-            // and return a promise to indicate task completion.
-            return context.sync().then(function () {
-                console.log('HTML added to the beginning of the document body.');
-            });
-        })
-            .catch(function (error) {
-                console.log('Error: ' + JSON.stringify(error));
-                if (error instanceof OfficeExtension.Error) {
-                    console.log('Debug info: ' + JSON.stringify(error.debugInfo));
-                }
-            });
-
     });
 });
