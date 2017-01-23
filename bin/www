@@ -6,7 +6,8 @@
 
 var app = require('../app');
 var debug = require('debug')('wordplugin:server');
-var http = require('http');
+var https = require('https');
+var certConf = require('../certconf');
 var dbHelper = new (require('../database/db'))();
 
 /**
@@ -26,7 +27,7 @@ dbHelper.createDatabase();
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = https.createServer(certConf, app);
 
 /**
  * Listen on provided port, on all network interfaces.

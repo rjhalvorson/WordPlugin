@@ -3,12 +3,13 @@
  */
 var express = require('express');
 var router = express.Router();
-var passport = require('passport');
+var cookie = require('cookie');
+var cookieParser = require('cookie-parser');
 var jsforce = require('jsforce');
 var dbHelper = new(require('../database/db'))();
-var cAppConfig = require('../ws-conf').connectedAppConfig;
+var cAppConfig = require('../models/ws-conf').connectedAppConfig;
 var fs = require('fs');
-var http = require('http');
+var io = require('../app');
 
 router.get('/download:docId', function(req, res){
 
@@ -40,7 +41,10 @@ router.get('/download:docId', function(req, res){
                 });
                 r.on('finish', function(){
                     fout.close();
-                    res.download(fout.path, 'myFile.docx');
+                    var base64doc = r.toString('base64');
+                    console.log(base64doc);
+                    //res.download(fout.path, 'myFile.docx');
+                    io.to(req.sessionID).emit('doc_ready', base64doc);
                 });
             }
         }
@@ -48,3 +52,4 @@ router.get('/download:docId', function(req, res){
 });
 
 module.exports = router;
+

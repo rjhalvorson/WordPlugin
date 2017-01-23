@@ -6,10 +6,46 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var csrf = require('csurf');
+var cookie = require('cookie');
 var authenticationOptions = {};
 var dbHelper = new(require('../database/db'))();
+var cookieParser = require('cookie-parser');
+var io = require('../app');
+var util = require('../modules/utility');
+var ts = require('../modules/termSearch');
 
 authenticationOptions = {display: "popup"};
+
+io.on('connection', function onConnection(socket) {
+    var jsonCookie = cookie.parse(socket.handshake.headers.cookie);
+    var sessionID = cookieParser.signedCookie(jsonCookie.nodecookie, 'keyboard cat');
+    socket.join(sessionID);
+
+    console.log('connected on 3002');
+
+    socket.on('downloadDoc',
+        function download(docId) {
+        console.log("received request to download ");
+        util.getBase64File(docId, sessionID, function sendDoc(myDoc){
+            io.to(sessionID).emit('doc_ready', myDoc);
+        });
+    });
+
+    socket.on('searchTerms', function download(searchDom) {
+        console.log("received request to search ");
+        ts.getQuoteTerms(sessionID, searchDom, function(termResults){
+            io.to(sessionID).emit('termSearchResults', termResults);
+        });
+    });
+
+    socket.on('getTerm', function sendTerm(termId){
+        console.log('received request for term');
+        ts.getQuoteTerm(sessionID, termId, function(termResult) {
+            io.to(sessionID).emit('termResult', termResult.SBQQ__Body__c, termResult.Font__c, termResult.Font_Size__c);
+        });
+    });
+});
+
 
 router.use(csrf());
 
@@ -70,9 +106,9 @@ router.get('/auth/forcedotcom/callback', function handleRequest(req, res) {
                         if (error) {
                             throw error;
                         } else {
-                            res.render('home', {
-                                user: req.user
-                            });
+                            io.to(req.sessionID).emit('auth_success', req.user);
+                            console.log('This is the Emitting ID: ' + req.sessionID);
+                            res.render('auth_complete');
                         }
                     }
                 );

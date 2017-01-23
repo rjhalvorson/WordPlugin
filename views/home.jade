@@ -1,14 +1,20 @@
-extends layout
+extends navigation
 
-block content
-    h1= title
-    p Welcome #{user.displayName}
-    p Choose a Task
-    p
-        a(href='/quotes/viewQuotes') View Quotes
-    p
-        a(href='/quoteterms/viewTerms') View Clauses
-    p
-        a(href='/view:import') Import Files
-    p
-        a(href='/connect/logout') Logout
+block mainContent
+    div
+        p Welcome #{user.displayName}
+        p Choose a Task
+        p
+            a(href='/quotes/viewQuotes') New Document From Template
+        p
+            a(href='/quotes/viewQuotes') Existing Documents
+        p(onclick="window.open('/quotes/viewQuotes', 'width=400,height=600,centerscreen=1,menubar=0,toolbar=0,location=0,personalbar=0,status=0,titlebar=0,dialog=1')") Existing Documents (Popup)
+        p(onclick="window.open('/quoteterms/viewTermSearch', 'width=800,height=600,centerscreen=1,menubar=0,toolbar=0,location=0,personalbar=0,status=0,titlebar=0,dialog=1')") Clause Library
+        p
+            a(href='/quoteterms/viewTermSearch') Clause Library
+        p
+            a(href='/quoteterms/viewTermSearch') Clause Library
+        p
+            a(href='/view:import') Template Wizard
+        p
+            a(href='/connect/logout') Logout

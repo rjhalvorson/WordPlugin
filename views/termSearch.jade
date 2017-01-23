@@ -1,0 +1,48 @@
+extends navigation
+
+block mainContent
+    h1 Quote Term Search
+    div(class="ms-Grid")
+        for field in fields
+            div(class="ms-Grid-row searchTermFields")
+                div(class="ms-Grid-col ms-u-sm3 ms-u-md3 ms-u-lg3 termApiName")
+                    label(class="ms-Label" searchField="#{field.apiName}") #{field.label}
+                div(class="ms-Grid-col ms-u-sm3 ms-u-md3 ms-u-lg3 ms-Dropdown termOperator")
+                    i.ms-Dropdown-caretDown.ms-Icon.ms-Icon--caretDown
+                    select.ms-Dropdown-select
+                        option Equals
+                        option Not Equals
+                        option Contains
+                        option >
+                        option >=
+                        option <
+                        option <=
+                        option In
+                div(class="ms-Grid-col ms-u-sm1 ms-u-md1 ms-u-lg1")
+                case field.type
+                    when "PICKLIST"
+                        div(class="ms-Grid-col ms-u-sm4 ms-u-md4 ms-u-lg4 ms-Dropdown termSearchValue")
+                            label(class="ms-Label" fieldType="PICKLIST" style="display:none;")
+                            i.ms-Dropdown-caretDown.ms-Icon.ms-Icon--caretDown
+                            select.ms-Dropdown-select
+                                option
+                                for val in field.fVals
+                                    option #{val.label}
+                    when "TEXTAREA"
+                        div(class="ms-Grid-col ms-u-sm4 ms-u-md4 ms-u-lg4 ms-TextField ms-TextField--placeholder termSearchValue")
+                            label(class="ms-Label" fieldType="TEXTAREA") Given name
+                            input(class="ms-TextField-field")
+                    when "STRING"
+                        div(class="ms-Grid-col ms-u-sm4 ms-u-md4 ms-u-lg4 ms-TextField ms-TextField--placeholder termSearchValue")
+                            label(class="ms-Label" fieldType="STRING") Given name
+                            input(class="ms-TextField-field")
+                div(class="ms-Grid-col ms-u-sm1 ms-u-md1 ms-u-lg1")
+        div(class="ms-Grid-row")
+            div(class="ms-Grid-col ms-u-sm9 ms-u-md9 ms-u-lg9")
+            div(class="ms-Grid-col ms-u-sm2 ms-u-md2 ms-u-lg2")
+                button(class="ms-Button ms-Button--primary" id="termSearch")
+                    span(class="ms-Button-label") Search
+            div(class="ms-Grid-col ms-u-sm1 ms-u-md1 ms-u-lg1")
+        div(class="ms-Grid-row")
+            div(class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-lg12" id="termResults")
+

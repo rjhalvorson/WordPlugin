@@ -1,8 +1,27 @@
 extends layout
 
-block content
-  h1= title
-  p Welcome to Redling for CPQ
-  p
-    a(href="connect/auth/forcedotcom/#{sessionID}") Login to Salesforce
-    span  to get started
+block mainContent
+  div(id='header' class='ms-fontSize-l ms-fontWeight-regular')
+    div(class='ms-Grid')
+      div(class='ms-Grid-row')
+        div(class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-lg12")
+          img(src="/images/salesforce_cpq.png" style="margin:auto; display:block" alt="Logo" height="70" width="146")
+        div(class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-lg12" style="margin-top:10px;")
+          div(class="ms-fontSize-xl" style="display:block; text-align:center; font-family:'SalesforceSansRegular' !important; line-height:2em; color:#7c868d;") Word Document Plugin
+  div(id='content' class='ms-Grid')
+    div(id=('initial_login'), style=('display:block') class='ms-Grid-row')
+      div(class='ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-lg12' style='margin-top:10px;')
+        div(
+        class='cpq-centerIt clickable-area clickable-color',
+        title='Connect to Salesforce',
+        onclick="window.open('https://localhost:3000/connect/auth/forcedotcom/#{sessionID}', 'AuthPopup', 'width=500,height=600,centerscreen=1,menubar=0,toolbar=0,location=0,personalbar=0,status=0,titlebar=0,dialog=1')")
+          a(class='ms-u-textAlignCenter' style="font-size:11pt; font-family:'SalesforceSansBold' !important;") Sign in with Salesforce
+          div(class='cpq-centerIt')
+            img(style='height:30px; width:auto; margin-top:10px' src="/images/plugin.png")
+    div(id=('get_started'), style=('display:none') class='ms-ListItem')
+      div
+        p Congratulations - You have Successfully Logged Into QTC Plugin
+        p
+          a(href="https://localhost:3000/home") Click to Start
+  div(class="page-bottom")
+    p © Copyright 2016 Salesforce.com

@@ -1,6 +1,6 @@
-extends layout
+extends navigation
 
-block content
+block mainContent
     h1 #{quote.Name}
     p Welcome to Redling for CPQ
     p #{quote.Name}
@@ -24,4 +24,5 @@ block content
                 td #{doc.SBQQ__OutputFormat__c}
                 td #{doc.SBQQ__Version__c}
                 td
-                    a(href="/document/download#{doc.SBQQ__ViewRecordId__c}" target="_blank") Click to Download
+                    button(class="ms-Button ms-Button--primary docLink" documentId='#{doc.SBQQ__ViewRecordId__c}')
+                        span(class="ms-Button-label") Open

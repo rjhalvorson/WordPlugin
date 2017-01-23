@@ -2,11 +2,18 @@
  * Created by rhalvorson on 12/30/16.
  */
 var express = require('express');
+var cookie = require('cookie');
+var cookieParser = require('cookie-parser');
 var router = express.Router();
 var passport = require('passport');
 var jsforce = require('jsforce');
 var dbHelper = new(require('../database/db'))();
-var cAppConfig = require('../ws-conf').connectedAppConfig;
+var cAppConfig = require('../models/ws-conf').connectedAppConfig;
+var io = require('../app');
+
+io.on('downloadDoc', function onConnection(socket) {
+    console.log('Felt Link Click');
+});
 
 router.get('/viewQuotes', function(req, res){
 
