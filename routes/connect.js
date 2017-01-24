@@ -44,6 +44,13 @@ io.on('connection', function onConnection(socket) {
             io.to(sessionID).emit('termResult', termResult.SBQQ__Body__c, termResult.Font__c, termResult.Font_Size__c);
         });
     });
+
+    socket.on('saveDocument', function sendTerm(blob){
+        console.log('received request to save quote');
+        util.saveBase64File(sessionID, blob, function() {
+            io.to(sessionID).emit('docSaved');
+        });
+    });
 });
 
 

@@ -3,13 +3,14 @@
  */
 var express = require('express');
 var router = express.Router();
-var cookie = require('cookie');
-var cookieParser = require('cookie-parser');
 var jsforce = require('jsforce');
 var dbHelper = new(require('../database/db'))();
 var cAppConfig = require('../models/ws-conf').connectedAppConfig;
 var fs = require('fs');
 var io = require('../app');
+var util = require('../modules/utility');
+var multer = require('multer');
+var upload = multer();
 
 router.get('/download:docId', function(req, res){
 
@@ -49,6 +50,20 @@ router.get('/download:docId', function(req, res){
             }
         }
     );
+});
+/*
+
+router.post('/save', upload.single('file'), function(req, res, next){
+    util.saveBase64File(req.sessionID, req.body, function(quoteDocId){
+        console.log(quoteDocId);
+        res.send(quoteDocId);
+    })
+}); */
+
+router.post('/save', upload.single('photho'), function(req, res){
+    console.log(req.body) // form fields
+    console.log(req.file) // form files
+    res.status(204).end()
 });
 
 module.exports = router;

@@ -26,6 +26,43 @@ var getBase64File = function(docId, sessionId, sendDoc) {
 };
 
 
+var saveBase64File = function(sessionId, blob, callback){
+        getjsForceConnection(sessionId, function(conn) {
+            conn.sobject("Document").create(
+                {
+                    Description: "Quote",
+                    Keywords: "quote",
+                    FolderId: "00541000001sD9V",
+                    Name: "Redlined Quote",
+                    Type: "docx",
+                    body: blob
+                },
+                function (err, ret) {
+                    if (err || !ret.success) {
+                        return console.error(err, ret);
+                    }
+                    conn.sobject("SBQQ__QuoteDocument__c").create(
+                        {
+                            Name: 'Redlined Document',
+                            SBQQ__AttachmentId__c: ret.id,
+                            SBQQ__Version__c: 100,
+                            SBQQ__Quote__c: 'a0l41000004e7Ur',
+                            SBQQ__OutputFormat__c : "MS Word"
+                        },
+                        function (err, ret) {
+                            if (err || !ret.success) {
+                                return console.error(err, ret);
+                            }
+                            callback(ret.id);
+                        }
+                    )
+                });
+            });
+};
+
+
+
+
 var getjsForceConnection = function(sessionId, sendConn){
     dbHelper.getUserDataSessionID(
         sessionId,
@@ -100,7 +137,7 @@ var getSearchFields = function(fs, meta, sendFields){
 exports.getBase64File = getBase64File;
 exports.getjsForceConnection = getjsForceConnection;
 exports.getFieldsInSet = getFieldsInSet;
-//exports.getSearchFields = getSearchFields;
+exports.saveBase64File = saveBase64File;
 
 
 /*
